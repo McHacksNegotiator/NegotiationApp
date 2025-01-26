@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { Box, Card, Button } from '@mui/joy';
+import { Box, Card, Button, Typography } from '@mui/joy';
 import { CallScreen } from '../components/CallScreen';
 import { NegotiationForm } from '../components/NegotiationForm';
 import { Timer } from '../components/Timer';
@@ -37,10 +37,11 @@ const LandingPage = () => {
   const peerConnection = useRef(null);
   const audioElement = useRef(null);
 
-  async function startSession() {
+  async function startSession(formData) {
     setIsConnected(true);
 
-    const tokenResponse = await fetch("/token");
+    const queryParams = new URLSearchParams(formData).toString();
+    const tokenResponse = await fetch(`/token?${queryParams}`);
     const data = await tokenResponse.json();
     const EPHEMERAL_KEY = data.client_secret.value;
 
@@ -82,97 +83,111 @@ const LandingPage = () => {
   }
 
   return (
-    isDone ? <ThankYouPage close={closeThankYou} /> : 
-    <Box
-      component="main"
-      sx={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-        display: 'flex',
-        flexDirection: 'column',
-        background: 'linear-gradient(to bottom right, #9c27b0, #f06292, #f44336)',
-        overflowY: 'auto',
-        p: { xs: 1, sm: 2 }
-      }}
-    >
-      {isConnected && <Timer />}
+    isDone ? <ThankYouPage close={closeThankYou} /> :
       <Box
+        component="main"
         sx={{
-          flex: 1,
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
           display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          my: { xs: 2, sm: 3 },
-          position: 'relative'
+          flexDirection: 'column',
+          background: 'linear-gradient(to bottom right, #9c27b0, #f06292, #f44336)',
+          overflowY: 'auto',
+          p: { xs: 1, sm: 2 }
         }}
       >
-        <Card
-          variant={isConnected ? "plain" : "soft"}
+        <Typography
+          level="h1"
           sx={{
-            width: isConnected ? '100%' : { xs: '98%', sm: '85%', md: '75%', lg: '65%' },
-            maxWidth: isConnected ? 'none' : '800px',
-            background: isConnected ? 'transparent' : 'rgba(255, 255, 255, 0.9)',
-            backdropFilter: isConnected ? 'none' : 'blur(8px)',
-            boxShadow: isConnected ? 'none' : undefined,
-            position: 'relative',
-            zIndex: 1
+            textAlign: 'center',
+            mt: 4,
+            mb: 2,
+            color: 'white',
+            fontWeight: 'bold',
+            textShadow: '0 0 10px rgba(0,0,0,0.3)',
+            fontSize: { xs: '2.5rem', sm: '3rem', md: '3.5rem', lg: '4rem' }
           }}
         >
-          {isConnected ? (
-            <CallScreen
-              micOn={micOn}
-            />
-          ) : (
-            <NegotiationForm startSession={startSession} />
-          )}
-        </Card>
-      </Box>
-
-      {isConnected && (
+          Bargain Bot
+        </Typography>
+        {isConnected && <Timer />}
         <Box
           sx={{
-            position: 'fixed',
-            bottom: 16,
-            left: '50%',
-            transform: 'translateX(-50%)',
+            flex: 1,
             display: 'flex',
-            gap: 2,
-            bgcolor: 'rgba(255, 255, 255, 0.9)',
-            p: 2,
-            borderRadius: 'xl',
-            boxShadow: 'md'
+            alignItems: 'center',
+            justifyContent: 'center',
+            my: { xs: 2, sm: 3 },
+            position: 'relative'
           }}
         >
-          <Button
-            variant="soft"
-            color={micOn ? 'primary' : 'warning'}
-            onClick={() => setMic(a => !a)}
+          <Card
+            variant={isConnected ? "plain" : "soft"}
             sx={{
-              fontSize: '1.1rem',
-              px: 4,
-              py: 1.5
+              width: isConnected ? '100%' : { xs: '98%', sm: '85%', md: '75%', lg: '65%' },
+              maxWidth: isConnected ? 'none' : '800px',
+              background: isConnected ? 'transparent' : 'rgba(255, 255, 255, 0.9)',
+              backdropFilter: isConnected ? 'none' : 'blur(8px)',
+              boxShadow: isConnected ? 'none' : undefined,
+              position: 'relative',
+              zIndex: 1
             }}
           >
-            {micOn ? 'Talk to AI Agent' : 'Return to Call'}
-          </Button>
-          <Button
-            variant="soft"
-            color="danger"
-            onClick={handleEndCall}
-            sx={{
-              fontSize: '1.1rem',
-              px: 4,
-              py: 1.5
-            }}
-          >
-            End Call
-          </Button>
+            {isConnected ? (
+              <CallScreen
+                micOn={micOn}
+              />
+            ) : (
+              <NegotiationForm startSession={startSession} />
+            )}
+          </Card>
         </Box>
-      )}
-    </Box>);
+
+        {isConnected && (
+          <Box
+            sx={{
+              position: 'fixed',
+              bottom: 16,
+              left: '50%',
+              transform: 'translateX(-50%)',
+              display: 'flex',
+              gap: 2,
+              bgcolor: 'rgba(255, 255, 255, 0.9)',
+              p: 2,
+              borderRadius: 'xl',
+              boxShadow: 'md'
+            }}
+          >
+            <Button
+              variant="soft"
+              color={micOn ? 'primary' : 'warning'}
+              onClick={() => setMic(a => !a)}
+              sx={{
+                fontSize: '1.1rem',
+                px: 4,
+                py: 1.5
+              }}
+            >
+              {micOn ? 'Talk to AI Agent' : 'Return to Call'}
+            </Button>
+            <Button
+              variant="soft"
+              color="danger"
+              onClick={handleEndCall}
+              sx={{
+                fontSize: '1.1rem',
+                px: 4,
+                py: 1.5
+              }}
+            >
+              End Call
+            </Button>
+          </Box>
+        )}
+      </Box>);
 };
 
 export default LandingPage;

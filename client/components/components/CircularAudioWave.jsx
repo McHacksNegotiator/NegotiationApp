@@ -8,13 +8,13 @@ const CircularAudioWave = ({ audioTrack }) => {
 
   useEffect(() => {
     if (!audioTrack?.mediaStreamTrack) return;
-    
+
     const audioContext = new AudioContext();
     const analyzer = audioContext.createAnalyser();
     analyzerRef.current = analyzer;
     analyzer.fftSize = 64;
     analyzer.smoothingTimeConstant = 0.8;
-    
+
     const mediaStream = new MediaStream([audioTrack.mediaStreamTrack]);
     const source = audioContext.createMediaStreamSource(mediaStream);
     sourceRef.current = source;
@@ -29,7 +29,7 @@ const CircularAudioWave = ({ audioTrack }) => {
     const animate = () => {
       const dataArray = new Uint8Array(analyzer.frequencyBinCount);
       analyzer.getByteFrequencyData(dataArray);
-      
+
       const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
       const scale = 1 + (average / 255) * 0.6;
       const radius = baseRadius * scale;
@@ -57,7 +57,7 @@ const CircularAudioWave = ({ audioTrack }) => {
 
       animationRef.current = requestAnimationFrame(animate);
     };
-    
+
     animate();
 
     return () => {
@@ -69,10 +69,10 @@ const CircularAudioWave = ({ audioTrack }) => {
 
   return (
     <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64">
-      <canvas 
-        ref={canvasRef} 
-        width={256} 
-        height={256} 
+      <canvas
+        ref={canvasRef}
+        width={256}
+        height={256}
         className="w-full h-full"
       />
     </div>

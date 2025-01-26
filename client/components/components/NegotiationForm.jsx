@@ -25,7 +25,7 @@ const NegotiationForm = ({ startSession }) => {
     if (isActivating) return;
 
     setIsActivating(true);
-    startSession();
+    startSession(formData);
   }
 
   return (

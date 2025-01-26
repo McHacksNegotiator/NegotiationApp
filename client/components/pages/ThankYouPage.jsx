@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Typography, Button, Card } from '@mui/joy';
 
-const ThankYouPage = ({ onClose }) => {
+const ThankYouPage = ({ close }) => {
   return (
     <Box
       component="main"
@@ -43,9 +43,9 @@ const ThankYouPage = ({ onClose }) => {
             Thank You for Your Call
           </Typography>
           <Typography sx={{ mb: 3, maxWidth: 600, mx: 'auto' }}>
-            We appreciate the time you've taken to discuss your internet service. Our team will review your request and get back to you soon.
+            We hope to have negotiated a successful deal for you. Please return to the home page to start a new session.
           </Typography>
-          <Button 
+          <Button
             variant="solid"
             size="lg"
             fullWidth
@@ -60,7 +60,7 @@ const ThankYouPage = ({ onClose }) => {
               },
               transition: 'all 0.2s'
             }}
-            onClick={onClose}
+            onClick={close}
           >
             Return to Home
           </Button>
