@@ -138,8 +138,14 @@ const LandingPage = () => {
   const isConnected = useIsConnected();
   const [appId] = useState(import.meta.env.VITE_AGORA_APP_ID);
   const [channel] = useState(import.meta.env.VITE_AGORA_CHANNEL_NAME);
-  const [token] = useState("");
   const [micOn, setMic] = useState(true);
+  let userToken = ""; //Token for the actual user of the app to join the call
+  let sstToken = ""; //Token for the speech-to-text bot to join the call
+  const subBotUid = "123";
+  let subBotToken = ""; //Token for the speech-to-text bot to join the call
+  const pubBotUid = "456";
+  let pubBotToken = ""; //Token for the speech-to-text bot to join the call
+  let taskId = "";//task id for the speech-to-text bot, required to stop the bot
 
   const handleApiCall = async () => {
     const url = `https://api.agora.io/v1/projects/${appId}/rtsc/speech-to-text/builderTokens`;
@@ -148,7 +154,7 @@ const LandingPage = () => {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `agora token="${import.meta.env.VITE_AGORA_TOKEN}"`
+        'Authorization': `agora token="${userToken}"`
       },
       body: JSON.stringify({
         instanceId: channel,
@@ -158,11 +164,145 @@ const LandingPage = () => {
     try {
       const res = await fetch(url, options);
       const data = await res.json();
+      sstToken=data.tokenName;
+      localStorage.setItem('sstToken', sstToken);
       console.log(data);
     } catch (error) {
       console.error('Error:', error);
     }
   };
+
+  const generateCallToken = async () => {
+    const url='http://localhost:3000/generate-token';
+
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        uid: 0,
+        role: 1,
+      }),
+    };
+
+    try {
+      const res = await fetch(url, options);
+      const data = await res.json();
+      userToken=data.token;
+      localStorage.setItem('userToken', userToken);
+      console.log("Token generated:", data.token);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  }
+
+  const generateSubToken = async () => {
+    const url='http://localhost:3000/generate-token';
+
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        uid: subBotUid,
+        role: 1,
+      }),
+    };
+
+    try {
+      const res = await fetch(url, options);
+      const data = await res.json();
+      subBotToken=data.token;
+      console.log("Sub Token generated:", data.token);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const generatePubToken = async () => {
+    const url='http://localhost:3000/generate-token';
+
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        uid: pubBotUid,
+        role: 2,
+      }),
+    };
+
+    try {
+      const res = await fetch(url, options);
+      const data = await res.json();
+      pubBotToken=data.token;
+      console.log("Pub Token generated:", data.token);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const startSstTask = async () => {
+    const url = `https://api.agora.io/v1/projects/${appId}/rtsc/speech-to-text/tasks?builderToken=${sstToken? sstToken: localStorage.getItem('sstToken')}`;
+  
+    const options = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `agora token="${userToken? userToken: localStorage.getItem('userToken')}"`
+      },
+      body: JSON.stringify({
+        languages: ["en-US"], // Replace with your languages
+        maxIdleTime: 30,
+        rtcConfig: {
+          channelName: channel ? channel: import.meta.env.VITE_AGORA_CHANNEL_NAME, // Replace with your channel name
+          subBotUid: subBotUid.toString(),
+          subBotToken: subBotToken,
+          pubBotUid: pubBotUid.toString(),
+          pubBotToken: pubBotToken,
+        },
+      }),
+    };
+  
+    try {
+      const res = await fetch(url, options);
+      const data = await res.json();
+      taskId=data.taskId;
+      localStorage.setItem('taskId', taskId);
+      console.log("Speech-to-Text Task created:", data);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  const stopSstTask = async () => {
+    const url = `https://api.agora.io/v1/projects/${appId}/rtsc/speech-to-text/tasks/${taskId? taskId:localStorage.getItem('taskId')}?builderToken=${sstToken? sstToken: localStorage.getItem('sstToken')}`;
+  
+    const options = {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `agora token="${userToken? userToken: localStorage.getItem('userToken')}"`
+      },
+    };
+  
+    try {
+      const res = await fetch(url, options);
+      const data = await res.json();
+      console.log("Speech-to-Text Task stopped:", data);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+  
+  // Example usage
+  const handleStopSstTask = (e) => {
+    stopSstTask();
+  };
+
 
   useJoin({ appid: appId, channel: channel, token: import.meta.env.VITE_AGORA_TOKEN }, calling);
   const { localMicrophoneTrack } = useLocalMicrophoneTrack(micOn);
@@ -171,13 +311,14 @@ const LandingPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    handleApiCall();
+    generateCallToken().then(() => handleApiCall()).then(() => generateSubToken()).then(() => generatePubToken()).then(() => startSstTask());
     setCalling(true);
   };
 
   const handleEndCall = (e) => {
     //setCalling(false);
     e.preventDefault()
+    handleStopSstTask();
     navigate('/thank-you');
   };
 

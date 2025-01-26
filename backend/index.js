@@ -6,10 +6,14 @@ const dotenv = require("dotenv").config({
 const fs = require("fs");
 const RtcTokenBuilder = require("./helpers/RtcTokenBuilder").RtcTokenBuilder;
 const RtcRole = require("./helpers/RtcTokenBuilder").Role;
+const cors = require("cors");
 
 const app = express();
 app.use(express.json());
-
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true
+}));
 const saveOutputsToFile = (outputs) => {
   fs.writeFileSync("outputs.json", JSON.stringify(outputs, null, 2));
 };
