@@ -1,7 +1,15 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { join, dirname } from "path";
+import { fileURLToPath } from "url";
 
-// https://vite.dev/config/
-export default defineConfig({
-  plugins: [react()],
-})
+import viteReact from "@vitejs/plugin-react";
+import viteFastifyReact from "@fastify/react/plugin";
+
+const path = fileURLToPath(import.meta.url);
+
+export default {
+  root: join(dirname(path), "client"),
+  plugins: [viteReact(), viteFastifyReact()],
+  ssr: {
+    external: ["use-sync-external-store"],
+  },
+};
