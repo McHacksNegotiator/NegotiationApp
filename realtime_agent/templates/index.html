@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISP Negotiation Demo</title>
+    <script>
+        async function startAgent() {
+            const data = {
+                channel_name: document.getElementById("channel_name").value,
+                uid: parseInt(document.getElementById("uid").value),
+                language: document.getElementById("language").value,
+                system_instruction: document.getElementById("system_instruction").value,
+                voice: document.getElementById("voice").value,
+                client_data: {
+                    name: document.getElementById("name").value,
+                    date_of_birth: document.getElementById("date_of_birth").value,
+                    home_address: document.getElementById("home_address").value,
+                    account_number: document.getElementById("account_number").value
+                }
+            };
+            const response = await fetch('/start_agent', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            const result = await response.json();
+            alert(result.status || result.error);
+        }
+
+        async function stopAgent() {
+            const data = {
+                channel_name: document.getElementById("channel_name").value
+            };
+            const response = await fetch('/stop_agent', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            const result = await response.json();
+            alert(result.status || result.error);
+        }
+
+        async function holdCall() {
+            const data = {
+                channel_name: document.getElementById("channel_name").value
+            };
+            const response = await fetch('/hold_call', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+            const result = await response.json();
+            alert(result.status || result.error);
+        }
+
+        function speakUp() {
+            alert("Speak up button clicked. Roleplay as the agent.");
+        }
+    </script>
+</head>
+
+<body>
+    <div id="root">
+        <!-- React will render the App component here -->
+    </div>
+    <script src="/static/js/bundle.js"></script>
+</body>
+
+</html>
