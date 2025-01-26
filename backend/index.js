@@ -3,7 +3,7 @@ const express = require("express");
 const dotenv = require("dotenv").config({
   path: require("find-config")(".env"),
 });
-const fs = require("fs");
+const fs = require("node:fs");
 const RtcTokenBuilder = require("./helpers/RtcTokenBuilder").RtcTokenBuilder;
 const RtcRole = require("./helpers/RtcTokenBuilder").Role;
 
@@ -24,18 +24,27 @@ const readOutputsFromFile = () => {
 
 // Function to check the pipeline status
 async function checkPipelineStatus(runId) {
-  const url = `https://api.gumloop.com/api/v1/get_pl_run?run_id=${runId}&user_id=${process.env.GUMLOOP_USER_ID}`;
+  const url = `https://api.gumloop.com/api/v1/get_pl_run?run_id=${runId}&user_id=hZ7iXCy8iDWSksDEOpeObIvGmoG2`;
   const options = {
     method: "GET",
     headers: {
-      Authorization: `Bearer ${process.env.AUTH_TOKEN}`,
+      Authorization: `Bearer 06696e2506bd40e6be67cc7a4252f2ad`,
       "Content-Type": "application/json",
     },
   };
 
   try {
     const response = await fetch(url, options);
+    console.log(response);
     const data = await response.json();
+
+    // fs.writeFile('outputData.json', data, (err) => {
+    //   if (err) {
+    //     console.error('Error writing file:', err);
+    //   } else {
+    //     console.log('File written successfully!');
+    //   }
+    // });    
     console.log("Pipeline status:", data);
 
     // Check if the state is RUNNING
@@ -52,24 +61,20 @@ async function checkPipelineStatus(runId) {
 }
 
 // Cron job to trigger the pipeline
-cron.schedule("0 0 * * *", async () => {
+cron.schedule("* * * * *", async () => {
   const options = {
-    method: "POST",
+    method: 'POST',
     headers: {
-      Authorization: "Bearer 06696e2506bd40e6be67cc7a4252f2ad",
-      "Content-Type": "application/json",
+      Authorization: 'Bearer 06696e2506bd40e6be67cc7a4252f2ad',
+      'Content-Type': 'application/json'
     },
-    body: JSON.stringify({
-      user_id: process.env.GUMLOOP_USER_ID,
-      saved_item_id: process.env.GUMLOOP_SAVED_ITEM_ID,
-      pipeline_inputs: [
-        {
-          input_name: process.env.PIPELINE_INPUT_NAME,
-          value: process.env.PIPELINE_INPUT_VALUE,
-        },
-      ],
-    }),
+    body: '{"user_id":"hZ7iXCy8iDWSksDEOpeObIvGmoG2","saved_item_id":"s2ouPQ1E7wT3vwTTA1cn4p","pipeline_inputs":[{"input_name":"input","value":"https://www.bell.ca/Bell_Internet/Internet_access;https://fizz.ca/en/internet;https://www.videotron.com/en/internet/unlimited-internet-plans;https://www.telus.com/en/internet/forfaits"}]}'
   };
+  
+  fetch('https://api.gumloop.com/api/v1/start_pipeline', options)
+    .then(response => response.json())
+    .then(response => console.log(response))
+    .catch(err => console.error(err));
 
   try {
     const response = await fetch(
@@ -105,28 +110,28 @@ app.get("/get-data", (req, res) => {
 });
 
 app.post("/generate-token", (req, res) => {
-    const { uid, role } = req.body;
-    const appId = process.env.VITE_AGORA_APP_ID;
-    const appCertificate = process.env.VITE_AGORA_APP_CERTIFICATE;
-    const channelName = "channelName";
-    // Fill in your actual user ID (0 for users without authentication)
-    // const uid = req.body.uid;
-    // Set streaming permissions, PUB = 1, SUB = 2, set PUB for most cases, only special cases need to set SUB
-    // const role = req.body.RtcTole;
-    // Token validity time in seconds
-    const tokenExpirationInSecond = 3600;
-    // The validity time of all permissions in seconds
-    const privilegeExpirationInSecond = 3600;
-    console.log("App Id:", appId);
-    console.log("App Certificate:", appCertificate);
-    if (appId == undefined || appId == "" || appCertificate == undefined || appCertificate == "") {
+  const { uid, role } = req.body;
+  const appId = process.env.VITE_AGORA_APP_ID;
+  const appCertificate = process.env.VITE_AGORA_APP_CERTIFICATE;
+  const channelName = "channelName";
+  // Fill in your actual user ID (0 for users without authentication)
+  // const uid = req.body.uid;
+  // Set streaming permissions, PUB = 1, SUB = 2, set PUB for most cases, only special cases need to set SUB
+  // const role = req.body.RtcTole;
+  // Token validity time in seconds
+  const tokenExpirationInSecond = 3600;
+  // The validity time of all permissions in seconds
+  const privilegeExpirationInSecond = 3600;
+  console.log("App Id:", appId);
+  console.log("App Certificate:", appCertificate);
+  if (appId == undefined || appId == "" || appCertificate == undefined || appCertificate == "") {
     console.log("Need to set environment variable AGORA_APP_ID and AGORA_APP_CERTIFICATE");
     process.exit(1);
-    }
-    // Generate Token
-    const tokenWithUid = RtcTokenBuilder.buildTokenWithUid(appId, appCertificate, channelName, uid, role, tokenExpirationInSecond, privilegeExpirationInSecond);
-    console.log("Token with int uid:", tokenWithUid);
-    res.status(200).json({token: tokenWithUid});
+  }
+  // Generate Token
+  const tokenWithUid = RtcTokenBuilder.buildTokenWithUid(appId, appCertificate, channelName, uid, role, tokenExpirationInSecond, privilegeExpirationInSecond);
+  console.log("Token with int uid:", tokenWithUid);
+  res.status(200).json({ token: tokenWithUid });
 });
 
 
