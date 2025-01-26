@@ -4,8 +4,11 @@ const dotenv = require("dotenv").config({
   path: require("find-config")(".env"),
 });
 const fs = require("fs");
+const RtcTokenBuilder = require("./helpers/RtcTokenBuilder").RtcTokenBuilder;
+const RtcRole = require("./helpers/RtcTokenBuilder").Role;
 
 const app = express();
+app.use(express.json());
 
 const saveOutputsToFile = (outputs) => {
   fs.writeFileSync("outputs.json", JSON.stringify(outputs, null, 2));
@@ -100,6 +103,32 @@ app.get("/get-data", (req, res) => {
     res.status(404).send("Outputs not found");
   }
 });
+
+app.post("/generate-token", (req, res) => {
+    const { uid, role } = req.body;
+    const appId = process.env.VITE_AGORA_APP_ID;
+    const appCertificate = process.env.VITE_AGORA_APP_CERTIFICATE;
+    const channelName = "channelName";
+    // Fill in your actual user ID (0 for users without authentication)
+    // const uid = req.body.uid;
+    // Set streaming permissions, PUB = 1, SUB = 2, set PUB for most cases, only special cases need to set SUB
+    // const role = req.body.RtcTole;
+    // Token validity time in seconds
+    const tokenExpirationInSecond = 3600;
+    // The validity time of all permissions in seconds
+    const privilegeExpirationInSecond = 3600;
+    console.log("App Id:", appId);
+    console.log("App Certificate:", appCertificate);
+    if (appId == undefined || appId == "" || appCertificate == undefined || appCertificate == "") {
+    console.log("Need to set environment variable AGORA_APP_ID and AGORA_APP_CERTIFICATE");
+    process.exit(1);
+    }
+    // Generate Token
+    const tokenWithUid = RtcTokenBuilder.buildTokenWithUid(appId, appCertificate, channelName, uid, role, tokenExpirationInSecond, privilegeExpirationInSecond);
+    console.log("Token with int uid:", tokenWithUid);
+    res.status(200).json({token: tokenWithUid});
+});
+
 
 app.listen(3000, () => {
   console.log("Server running on http://localhost:3000");
