@@ -3,7 +3,7 @@ const express = require("express");
 const dotenv = require("dotenv").config({
   path: require("find-config")(".env"),
 });
-const fs = require("fs");
+const fs = require("node:fs");
 const RtcTokenBuilder = require("./helpers/RtcTokenBuilder").RtcTokenBuilder;
 const RtcRole = require("./helpers/RtcTokenBuilder").Role;
 
@@ -24,18 +24,27 @@ const readOutputsFromFile = () => {
 
 // Function to check the pipeline status
 async function checkPipelineStatus(runId) {
-  const url = `https://api.gumloop.com/api/v1/get_pl_run?run_id=${runId}&user_id=${process.env.GUMLOOP_USER_ID}`;
+  const url = `https://api.gumloop.com/api/v1/get_pl_run?run_id=${runId}&user_id=hZ7iXCy8iDWSksDEOpeObIvGmoG2`;
   const options = {
     method: "GET",
     headers: {
-      Authorization: `Bearer ${process.env.AUTH_TOKEN}`,
+      Authorization: `Bearer 06696e2506bd40e6be67cc7a4252f2ad`,
       "Content-Type": "application/json",
     },
   };
 
   try {
     const response = await fetch(url, options);
+    console.log(response);
     const data = await response.json();
+
+    // fs.writeFile('outputData.json', data, (err) => {
+    //   if (err) {
+    //     console.error('Error writing file:', err);
+    //   } else {
+    //     console.log('File written successfully!');
+    //   }
+    // });    
     console.log("Pipeline status:", data);
 
     // Check if the state is RUNNING
@@ -52,24 +61,20 @@ async function checkPipelineStatus(runId) {
 }
 
 // Cron job to trigger the pipeline
-cron.schedule("0 0 * * *", async () => {
+cron.schedule("* * * * *", async () => {
   const options = {
-    method: "POST",
+    method: 'POST',
     headers: {
-      Authorization: "Bearer 06696e2506bd40e6be67cc7a4252f2ad",
-      "Content-Type": "application/json",
+      Authorization: 'Bearer 06696e2506bd40e6be67cc7a4252f2ad',
+      'Content-Type': 'application/json'
     },
-    body: JSON.stringify({
-      user_id: process.env.GUMLOOP_USER_ID,
-      saved_item_id: process.env.GUMLOOP_SAVED_ITEM_ID,
-      pipeline_inputs: [
-        {
-          input_name: process.env.PIPELINE_INPUT_NAME,
-          value: process.env.PIPELINE_INPUT_VALUE,
-        },
-      ],
-    }),
+    body: '{"user_id":"hZ7iXCy8iDWSksDEOpeObIvGmoG2","saved_item_id":"s2ouPQ1E7wT3vwTTA1cn4p","pipeline_inputs":[{"input_name":"input","value":"https://www.bell.ca/Bell_Internet/Internet_access;https://fizz.ca/en/internet;https://www.videotron.com/en/internet/unlimited-internet-plans;https://www.telus.com/en/internet/forfaits"}]}'
   };
+  
+  fetch('https://api.gumloop.com/api/v1/start_pipeline', options)
+    .then(response => response.json())
+    .then(response => console.log(response))
+    .catch(err => console.error(err));
 
   try {
     const response = await fetch(
