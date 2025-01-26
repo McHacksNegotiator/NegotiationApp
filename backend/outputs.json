@@ -1,0 +1,20 @@
+{
+  "output": [
+    "Company Name: Bell Canada\n\nPlan Name: Fibe 50\n\nDownload Speed: 50 Mbps\n\nUpload Speed: 50 Mbps\n\nPrice: $85.00/mo.\n\n--------------------------",
+    "Company Name: Bell Canada\n\nPlan Name: Fibe 150\n\nDownload Speed: 150 Mbps\n\nUpload Speed: 150 Mbps\n\nPrice: $95.00/mo.\n\n--------------------------",
+    "Company Name: Bell Canada\n\nPlan Name: Fibe 300\n\nDownload Speed: 300 Mbps\n\nUpload Speed: 300 Mbps\n\nPrice: $100.00/mo.\n\n--------------------------",
+    "Company Name: Bell Canada\n\nPlan Name: Fibe 500\n\nDownload Speed: 500 Mbps\n\nUpload Speed: 500 Mbps\n\nPrice: $125.00/mo.\n\n--------------------------",
+    "Company Name: Bell Canada\n\nPlan Name: Gigabit Fibe 1.5\n\nDownload Speed: 1.5 Gbps\n\nUpload Speed: 940 Mbps\n\nPrice: $130.00/mo.\n\n--------------------------",
+    "Company Name: Bell Canada\n\nPlan Name: Gigabit Fibe 3.0\n\nDownload Speed: 3 Gbps\n\nUpload Speed: 3 Gbps\n\nPrice: $140.00/mo.\n\n--------------------------",
+    "Company Name: Fizz\n\nPlan Name: 30 Mbps\n\nDownload Speed: 30 Mbps\n\nUpload Speed: 10 Mbps\n\nPrice: $39/months\n\n--------------------------",
+    "Company Name: Fizz\n\nPlan Name: 60 Mbps\n\nDownload Speed: 60 Mbps\n\nUpload Speed: 10 Mbps\n\nPrice: $45/months\n\n--------------------------",
+    "Company Name: Fizz\n\nPlan Name: 200 Mbps\n\nDownload Speed: 200 Mbps\n\nUpload Speed: 30 Mbps\n\nPrice: $49/months\n\n--------------------------",
+    "Company Name: Fizz\n\nPlan Name: 500 Mbps\n\nDownload Speed: 500 Mbps\n\nUpload Speed: 50 Mbps\n\nPrice: $52/months\n\n--------------------------",
+    "Company Name: Fizz\n\nPlan Name: 940 Mbps\n\nDownload Speed: 940 Mbps\n\nUpload Speed: 50 Mbps\n\nPrice: $65/months\n\n--------------------------",
+    "Company Name: Videotron\n\nPlan Name: Internet 100\n\nDownload Speed: 100 mbps\n\nUpload Speed: 30 mbps\n\nPrice: $60.00/month\n\n--------------------------",
+    "Company Name: Videotron\n\nPlan Name: Internet 60\n\nDownload Speed: 60 mbps\n\nUpload Speed: 10 mbps\n\nPrice: $55.00/month\n\n--------------------------",
+    "Company Name: Videotron\n\nPlan Name: Internet GIGA\n\nDownload Speed: 940 mbps\n\nUpload Speed: 50 mbps\n\nPrice: $75.00/month\n\n--------------------------",
+    "Company Name: Videotron\n\nPlan Name: Internet 500\n\nDownload Speed: 500 mbps\n\nUpload Speed: 50 mbps\n\nPrice: $70.00/month\n\n--------------------------",
+    "Company Name: TELUS\n\nPlan Name: PureFibre Internet 1.5G\n\nDownload Speed: 1500 Mbps\n\nUpload Speed: 940 Mbps\n\nPrice: $79/mo.\n\n--------------------------"
+  ]
+}
